@@ -1,15 +1,17 @@
-
-const checkLength = function(lengthStr, maxLength){
-  if(lengthStr <= maxLength){
-    return true;
-  }
-  return false;
+function checkLength(string, maxLength){
+  return string.length <= maxLength;
 }
+checkLength('dowl,dwp', 10);
 
 const isPalindrome = function(str) {
-  // Убираем все не буквенно-цифровые символы и приводим к нижнему регистру
-  const cleanedStr = str.replace(/[^A-Za-z0-9]/g, '').toLowerCase();
 
-  // Сравниваем очищенную строку с её перевернутой версией
-  return cleanedStr === cleanedStr.split('').reverse().join('');
+  const cleanedStr = str.replaceAll(' ', '').toLowerCase();
+  for(let i = 0; i < cleanedStr.length / 2; i ++){
+    if(cleanedStr.at(i) !== cleanedStr.at(-i - 1)){
+      return false;
+    }
+    return true;
+  }
 }
+
+isPalindrome('шалаш');
