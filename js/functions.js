@@ -1,3 +1,4 @@
+
 function checkLength(string, maxLength){
   return string.length <= maxLength;
 }
@@ -15,3 +16,4 @@ const isPalindrome = function(str) {
 };
 
 isPalindrome('шалаш');
+
