@@ -12,6 +12,6 @@ const isPalindrome = function(str) {
     }
     return true;
   }
-}
+};
 
 isPalindrome('шалаш');
