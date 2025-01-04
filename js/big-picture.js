@@ -9,6 +9,25 @@ const commentCountBlock = bigPicture.querySelector('.social__comment-count');
 const commentsLoader = bigPicture.querySelector('.comments-loader');
 const closeButton = bigPicture.querySelector('.big-picture__cancel');
 
+// Закрытие полноразмерного изображения
+const closeBigPicture = () => {
+  bigPicture.classList.add('hidden');
+  body.classList.remove('modal-open');
+
+  // Удаляем обработчики
+  document.removeEventListener('keydown', onEscapeKeydown);
+  closeButton.removeEventListener('click', closeBigPicture);
+};
+
+// Закрытие по клавише Escape
+const onEscapeKeydown = (evt) => {
+  if (evt.key === 'Escape') {
+    evt.preventDefault();
+    closeBigPicture(); // Теперь closeBigPicture уже объявлена
+  }
+};
+
+// Используем готовую функцию createComment
 const createCommentElement = ({ avatar, message, name }) => {
   const commentElement = document.createElement('li');
   commentElement.classList.add('social__comment');
@@ -50,24 +69,6 @@ const openBigPicture = ({ url, likes, comments, description }) => {
   // Добавляем обработчики закрытия
   document.addEventListener('keydown', onEscapeKeydown);
   closeButton.addEventListener('click', closeBigPicture);
-};
-
-// Закрытие полноразмерного изображения
-const closeBigPicture = () => {
-  bigPicture.classList.add('hidden');
-  body.classList.remove('modal-open');
-
-  // Удаляем обработчики
-  document.removeEventListener('keydown', onEscapeKeydown);
-  closeButton.removeEventListener('click', closeBigPicture);
-};
-
-// Закрытие по клавише Escape
-const onEscapeKeydown = (evt) => {
-  if (evt.key === 'Escape') {
-    evt.preventDefault();
-    closeBigPicture();
-  }
 };
 
 export { openBigPicture };
