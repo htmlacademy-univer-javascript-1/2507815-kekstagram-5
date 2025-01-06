@@ -51,6 +51,13 @@ const onCommentsLoaderClick = () => {
   renderComments();
 };
 
+const onEscapeKeydown = (evt) => {
+  if (evt.key === 'Escape') {
+    evt.preventDefault();
+    closeBigPicture();
+  }
+};
+
 const closeBigPicture = () => {
   bigPicture.classList.add('hidden');
   body.classList.remove('modal-open');
@@ -61,13 +68,6 @@ const closeBigPicture = () => {
 
   displayedCommentsCount = 0;
   commentsToShow = [];
-};
-
-const onEscapeKeydown = (evt) => {
-  if (evt.key === 'Escape') {
-    evt.preventDefault();
-    closeBigPicture();
-  }
 };
 
 const openBigPicture = ({ url, likes, comments, description }) => {
