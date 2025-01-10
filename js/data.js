@@ -1,57 +1,60 @@
-import {getRandomInteger, getRandomArrayElement, createGeneratorId} from './util.js';
+import { isElementRepeat } from './util.js';
 
-const PICTURE_COUNT = 25;
-const LIKE_COUNT_MIN = 15;
-const LIKE_COUNT_MAX = 200;
-const AVATAR_COUNT = 6;
-const COMMENT_COUNT = 30;
+const MAX_HASHTAG_COUNT = 5;
+const MIN_HASHTAG_LENGTH = 2;
+const MAX_HASHTAG_LENGTH = 20;
+const MAX_LENGTH_COMMENT = 140;
+const UploadForm = document.querySelector('.img-upload__form');
+const hashtags = document.querySelector('.text__hashtags');
+const comment = document.querySelector('.text__description');
 
-const COMMENT_MESSAGE = [
-  'Всё отлично!',
-  'В целом всё неплохо. Но не всё.',
-  'Когда вы делаете фотографию, хорошо бы убирать палец из кадра. В конце концов это просто непрофессионально.',
-  'Моя бабушка случайно чихнула с фотоаппаратом в руках и у неё получилась фотография лучше.',
-  'Я поскользнулся на банановой кожуре и уронил фотоаппарат на кота и у меня получилась фотография лучше.',
-  'Лица у людей на фотке перекошены, как будто их избивают. Как можно было поймать такой неудачный момент?!'
-];
-
-const DESCRIPTION_PHOTO = [
-  'Лес, тишина, гладь воды — чистый дзен',
-  'Круассан и кофе – завтрак мечты.',
-  'Архитектура, от которой реально кайфуешь.',
-  'Красиво поданный эспрессо с пенкой, мечта кофемана!',
-  'Сочный бургер, от которого слюнки текут. Ням!'
-];
-const NAMES = ['Андрей', 'Антон', 'Анастасия', 'Рузиль', 'Cтепан', 'Елизавета'];
-
-
-const generateCommentId = createGeneratorId();
-
-const createMessage = () => getRandomInteger(0, 1)
-  ? getRandomArrayElement(COMMENT_MESSAGE)
-  : `${getRandomArrayElement(COMMENT_MESSAGE)} ${getRandomArrayElement(COMMENT_MESSAGE)}`;
-
-const createComment = () =>({
-  id: generateCommentId(),
-  avatar: `img/avatar-${getRandomInteger(1, AVATAR_COUNT)}.svg`,
-  message: createMessage(),
-  name: getRandomArrayElement(NAMES),
+const pristine = new Pristine(UploadForm, {
+  classTo: 'img-upload__field-wrapper',
+  errorTextParent: 'img-upload__field-wrapper',
+  errorTextTag: 'div',
+  errorTextClass: 'text__error'
 });
 
-const createPicture = (index) =>({
-  id: index,
-  url: `photos/${index}.jpg`,
-  description: getRandomArrayElement(DESCRIPTION_PHOTO),
-  likes: getRandomInteger(LIKE_COUNT_MIN, LIKE_COUNT_MAX),
-  comments: Array.from(
-    {length: getRandomInteger(0,COMMENT_COUNT)},
-    createComment,
-  ),
-});
+const validateHashtags = (value) => {
+  if (!value) {
+    return { isValid: true };
+  }
 
-const getPictures = () => Array.from(
-  {length: PICTURE_COUNT},
-  (_, indexPicture) => createPicture(indexPicture + 1),
-);
+  const hashtagsArray = value.split(' ').filter(Boolean).map((tag) => tag.toLowerCase());
 
-export{getPictures};
+  if (hashtagsArray.length > MAX_HASHTAG_COUNT) {
+    return { isValid: false, message: `Максимальное количество хэштегов - ${MAX_HASHTAG_COUNT}` };
+  }
+
+  for (const tag of hashtagsArray) {
+    if (isElementRepeat(tag, hashtagsArray)) {
+      return { isValid: false, message: 'Хэштеги не могут повторяться' };
+    }
+    if (!tag.startsWith('#')) {
+      return { isValid: false, message: 'Хэштег должен начинаться с символа #' };
+    }
+    if (tag.length < MIN_HASHTAG_LENGTH) {
+      return { isValid: false, message: 'Хэштег не может состоять только из #' };
+    }
+    if (tag.length > MAX_HASHTAG_LENGTH) {
+      return { isValid: false, message: `Хэштег не может превышать ${MAX_HASHTAG_LENGTH} символов` };
+    }
+    if (!/^[\wА-Яа-яЁё]+$/.test(tag.slice(1)) || tag.includes('_')) {
+      return { isValid: false, message: 'Символы в хэштеге могут быть только буквами и цифрами' };
+    }
+  }
+
+  return { isValid: true };
+};
+
+const validateComments = (value) => {
+  if (value.length > MAX_LENGTH_COMMENT) {
+    return false;
+  }
+  return true;
+};
+
+pristine.addValidator(hashtags, (value) => validateHashtags(value).isValid, (value) => validateHashtags(value).message);
+pristine.addValidator(comment, validateComments, 'Длина комментария не может быть больше 140 символов');
+
+export { pristine };
