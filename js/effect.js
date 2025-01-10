@@ -110,15 +110,39 @@ const onSliderUpdate = () => {
     image.style.filter = `${chosenEffect.style}(${effectValue}${chosenEffect.unit})`;
     effectLevelValue.value = parseFloat(effectValue);
   };
+<<<<<<< HEAD
   
   slider.noUiSlider.on('update', onSliderUpdate);
   form.addEventListener('change', onFormChange);
   
+=======
+
+  slider.noUiSlider.on('update', onSliderUpdate);
+  form.addEventListener('change', onFormChange);
+
+>>>>>>> ca17f452ba5e0108ba484757666bf3a07a1554c0
   const scaleImage = (value = DEFAULT_SCALE) => {
     image.style.transform = `scale(${value / 100})`;
     scaleInput.value = `${value}%`;
   };
 
+<<<<<<< HEAD
+=======
+  resetEffect();
+  const effectValue = slider.noUiSlider.get();
+  image.style.filter = `${chosenEffect.style}(${effectValue}${chosenEffect.unit})`;
+  effectLevelValue.value = parseFloat(effectValue);
+};
+
+slider.noUiSlider.on('update', onSliderUpdate);
+form.addEventListener('change', onFormChange);
+
+const scaleImage = (value = DEFAULT_SCALE) => {
+  image.style.transform = `scale(${value / 100})`;
+  scaleInput.value = `${value}%`;
+};
+
+>>>>>>> ca17f452ba5e0108ba484757666bf3a07a1554c0
 const onScaleButtonClick = (isBigger) => {
   const currentValue = parseInt(scaleInput.value, 10);
   const newValue = isBigger ? currentValue + SCALE_STEP : currentValue - SCALE_STEP;
@@ -147,4 +171,9 @@ const resetImage = () => {
   scaleImage(DEFAULT_SCALE);
 };
 
+<<<<<<< HEAD
 export { resetImage };
+=======
+export { resetImage };
+
+>>>>>>> ca17f452ba5e0108ba484757666bf3a07a1554c0
