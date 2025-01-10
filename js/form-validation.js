@@ -1,50 +1,60 @@
-export function initializeFormValidation() {
-  const uploadForm = document.getElementById('upload-form');
-  const pristine = new Pristine(uploadForm, {
-    classTo: 'img-upload__field-wrapper',
-    errorClass: 'img-upload__error',
-    successClass: 'img-upload__success',
-    errorTextParent: 'img-upload__field-wrapper',
-    errorTextTag: 'div',
-  });
+import { isEscapeKey, openSuccessMessage, openSendDataErrorMessage } from './util.js';
+import { postData } from './api.js';
+import { pristine } from './data.js';
+import { resetImage } from './effect.js';
 
-  // Валидация формы перед отправкой
-  uploadForm.addEventListener('submit', (e) => {
-    const isValid = pristine.validate();
-    if (!isValid) {
-      e.preventDefault();
-    }
-  });
+const form = document.querySelector('.img-upload__form');
+const uploadFile = form.querySelector('#upload-file');
+const uploadOverlay = form.querySelector('.img-upload__overlay');
+const uploadCloseButton = form.querySelector('#upload-cancel');
+const body = document.querySelector('body');
+const hashtags = document.querySelector('.text__hashtags');
+const comment = document.querySelector('.text__description');
+const submitButton = document.querySelector('.img-upload__submit');
 
-  // Сброс формы и закрытие
-  const cancelButton = document.getElementById('upload-cancel');
-  cancelButton.addEventListener('click', () => {
-    uploadForm.reset();
-    pristine.reset();
-  });
+const isTextFieldFocused = () =>
+  document.activeElement === hashtags ||
+  document.activeElement === comment;
 
-  // Отменить обработчик ESC при фокусе на поле
-  const inputFields = uploadForm.querySelectorAll('input, textarea');
-  inputFields.forEach((field) => {
-    field.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') {
-        e.stopPropagation();
-      }
-    });
-  });
+const onEscKeydown = (evt) => {
+  if (isEscapeKey(evt) && !isTextFieldFocused()) {
+    evt.preventDefault();
+    closeUploadOverlay();
+  }
+};
+const openUploadOverlay = () => {
+  uploadOverlay.classList.remove('hidden');
+  body.classList.add('modal-open');
+  document.addEventListener('keydown', onEscKeydown);
+};
+const onSendDataSuccess = () => {
+  closeUploadOverlay();
+  resetImage();
+  openSuccessMessage();
+};
 
-  // Инициализация библиотеки Pristine для валидации
-  pristine.addValidator(
-    uploadForm.querySelector('.text__hashtags'),
-    (value) => {
-      const hashtags = value.split(/\s+/);
-      for (const tag of hashtags) {
-        if (!/^#[a-zA-Z0-9_]{1,20}$/.test(tag)) {
-          return false;
-        }
-      }
-      return true;
-    },
-    'Хэш-теги должны начинаться с "#" и быть длиной до 20 символов.'
-  );
+const onFormSubmit = (evt) => {
+  evt.preventDefault();
+  if (pristine.validate()) {
+    submitButton.disabled = true;
+    postData(onSendDataSuccess, 'POST', new FormData(form), openSendDataErrorMessage);
+  }
+};
+
+
+function closeUploadOverlay () {
+  form.reset();
+  pristine.reset();
+  resetImage();
+  uploadOverlay.classList.add('hidden');
+  body.classList.remove('modal-open');
+  document.removeEventListener('keydown', onEscKeydown);
 }
+
+
+uploadFile.addEventListener('change', openUploadOverlay);
+uploadCloseButton.addEventListener('click', closeUploadOverlay);
+
+form.addEventListener('submit', onFormSubmit);
+
+export { onEscKeydown };
