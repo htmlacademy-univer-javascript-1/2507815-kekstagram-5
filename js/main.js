@@ -1,14 +1,12 @@
-import { getPictures } from './data.js';
-import { renderPictures } from './picture.js';
-import { initializeFormValidation } from './form-validation.js';
+import { getData } from './api.js';
+import { renderPhotos } from './picture.js';
+import './form-validation.js';
+import './photo.js';
+import { debounce } from './util.js';
+import { setFilterClick, renderSortedPhotos } from './functions.js';
 
-// Генерация данных
-const pictures = getPictures();
-
-// Отрисовка миниатюр
-renderPictures(pictures);
-
-
-document.addEventListener('DOMContentLoaded', () => {
-  initializeFormValidation();
+const RERENDER_DELAY = 500;
+getData((loadedPictures) => {
+  renderPhotos(loadedPictures);
+  setFilterClick(debounce(() => renderSortedPhotos(loadedPictures), RERENDER_DELAY));
 });
