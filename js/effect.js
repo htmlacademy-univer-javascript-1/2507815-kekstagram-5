@@ -2,7 +2,7 @@ const SCALE_STEP = 25;
 const MIN_SCALE = 25;
 const DEFAULT_SCALE = 100;
 
-const IMAGE_EFFECTS = [
+const EFFECTS = [
   {
     name: 'none',
     min: 0,
@@ -52,7 +52,7 @@ const IMAGE_EFFECTS = [
   },
 ];
 
-const DEFAULT_EFFECT = IMAGE_EFFECTS[0];
+const DEFAULT_EFFECT = EFFECTS[0];
 const scaleInput = document.querySelector('.scale__control--value');
 const smallerButton = document.querySelector('.scale__control--smaller');
 const biggerButton = document.querySelector('.scale__control--bigger');
@@ -97,27 +97,27 @@ const updateSlider = (effect = DEFAULT_EFFECT) => {
 };
 
 const onFormChange = (evt) => {
-  if (!evt.target.classList.contains('IMAGE_EFFECTS__radio')) {
+  if (!evt.target.classList.contains('effects__radio')) {
     return;
   }
-  chosenEffect = IMAGE_EFFECTS.find((effect) => effect.name === evt.target.value);
+  chosenEffect = EFFECTS.find((effect) => effect.name === evt.target.value);
   updateSlider(chosenEffect);
 };
 
 const onSliderUpdate = () => {
-    resetEffect();
-    const effectValue = slider.noUiSlider.get();
-    image.style.filter = `${chosenEffect.style}(${effectValue}${chosenEffect.unit})`;
-    effectLevelValue.value = parseFloat(effectValue);
-  };
-  
-  slider.noUiSlider.on('update', onSliderUpdate);
-  form.addEventListener('change', onFormChange);
-  
-  const scaleImage = (value = DEFAULT_SCALE) => {
-    image.style.transform = `scale(${value / 100})`;
-    scaleInput.value = `${value}%`;
-  };
+  resetEffect();
+  const effectValue = slider.noUiSlider.get();
+  image.style.filter = `${chosenEffect.style}(${effectValue}${chosenEffect.unit})`;
+  effectLevelValue.value = parseFloat(effectValue);
+};
+
+slider.noUiSlider.on('update', onSliderUpdate);
+form.addEventListener('change', onFormChange);
+
+const scaleImage = (value = DEFAULT_SCALE) => {
+  image.style.transform = `scale(${value / 100})`;
+  scaleInput.value = `${value}%`;
+};
 
 const onScaleButtonClick = (isBigger) => {
   const currentValue = parseInt(scaleInput.value, 10);
@@ -134,6 +134,7 @@ const onScaleButtonClick = (isBigger) => {
     }
   }
 };
+
 
 const onSmallerButtonClick = () => onScaleButtonClick(false);
 const onBiggerButtonClick = () => onScaleButtonClick(true);
