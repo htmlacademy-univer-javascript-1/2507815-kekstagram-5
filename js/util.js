@@ -36,23 +36,36 @@ const onSuccessButtonCLick = () => {
 const onSuccessEscKeydown = (evt) => {
   if (isEscapeKey(evt)) {
     evt.preventDefault();
-    document.querySelector('.success').remove();
+    const successElement = document.querySelector('.success');
+    if (successElement) {
+      successElement.remove();
+    } else {
+      console.error('Элемент .success не найден в DOM');
+    }
   }
 };
+
 
 const onSuccessClickEmpty = (evt) => {
-  if (!(evt.target.closest('.success__inner'))) {
-    document.querySelector('.success').remove();
+  const successElement = document.querySelector('.success');
+  if (!successElement) {
+    console.error('Элемент .success не найден в DOM');
+    return;
+  }
+  if (!evt.target.closest('.success__inner')) {
+    successElement.remove();
   }
 };
 
+
 const openSuccessMessage = () => {
-  document.body.append(successTemplate);
+  document.body.append(successTemplate.cloneNode(true));
   successButton.addEventListener('click', onSuccessButtonCLick);
   document.addEventListener('keydown', onSuccessEscKeydown);
   document.addEventListener('click', onSuccessClickEmpty);
   submitButton.disabled = false;
 };
+
 
 const onErrorEscKeydown = (evt) => {
   if (isEscapeKey(evt)) {
@@ -81,11 +94,18 @@ const openSendDataErrorMessage = () => {
 };
 
 function closeSendDataErrorMessage() {
-  document.querySelector('.error').remove();
+  const errorElement = document.querySelector('.error');
+  if (!errorElement) {
+    console.error('Элемент .error не найден в DOM');
+    return;
+  }
+  errorElement.remove();
   document.removeEventListener('keydown', onErrorEscKeydown);
   errorMessageCloseElement.removeEventListener('click', onErrorButtonClick);
   document.removeEventListener('click', onErrorClickEmpty);
   document.addEventListener('keydown', onEscKeydown);
+  document.removeEventListener('click', onSuccessClickEmpty);
+  document.removeEventListener('keydown', onSuccessEscKeydown);
 }
 
 const isElementRepeat = (element, array) => {
@@ -95,11 +115,11 @@ const isElementRepeat = (element, array) => {
   return false;
 };
 
-function debounce (callback, timeoutDelay = 500) {
+function debounce(callback, timeoutDelay = 500) {
   let timeoutId;
   return (...rest) => {
     clearTimeout(timeoutId);
-    timeoutId = setTimeout(() => callback.apply(this, rest), timeoutDelay);
+    timeoutId = setTimeout(() => callback(...rest), timeoutDelay);
   };
 }
 

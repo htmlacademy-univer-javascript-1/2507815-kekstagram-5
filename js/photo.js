@@ -9,9 +9,10 @@ fileChooser.addEventListener('change', () => {
   const fileName = file.name.toLowerCase();
   const matches = FILE_TYPES.some((it) => fileName.endsWith(it));
   if (matches) {
-    photoPreview.src = URL.createObjectURL(file);
+    const fileURL = URL.createObjectURL(file);
+    photoPreview.src = fileURL;
     effectsPreview.forEach((preview) => {
-      preview.style.backgroundImage = url('${photoPreview.src}');
+      preview.style.backgroundImage = `url('${fileURL}')`;
     });
   }
 });
